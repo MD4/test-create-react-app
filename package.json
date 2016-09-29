@@ -10,14 +10,13 @@
   },
   "dependencies": {
     "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react-dom": "^15.3.2",
+    "rx": "^4.1.0"
   },
   "scripts": {
     "clean": "find src -name '*.css' -exec rm {} \\; && rm -Rf build",
-
     "sass": "node-sass -r ./src -o ./src",
     "sass-watch": "node-sass -rw ./src -o ./src",
-
     "start": "npm run sass && react-scripts start",
     "build": "npm run sass && react-scripts build",
     "test": "npm run sass && react-scripts test --env=jsdom",
