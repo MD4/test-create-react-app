@@ -32,7 +32,7 @@ export default (id = Symbol()) => {
 
     static reducer(store, event) {
       switch (event.type) {
-        case (FirstButton.BUTTON_CLICK):
+        case (Button.events.BUTTON_CLICK):
           store.lol = `${store.lol} lol`;
           break;
         default:
