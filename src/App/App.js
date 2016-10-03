@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {Subject} from 'rx';
+import { Subject } from 'rx';
 import Button from './Button';
 
 export default (id = Symbol()) => {
@@ -27,24 +27,37 @@ export default (id = Symbol()) => {
     static store = {
       FirstButton: FirstButton.store,
       SecondButton: SecondButton.store,
-      lol: ''
+      lol: 'lol',
+      show: false
     };
 
-    static reducer(store, event) {
-      switch (event.type) {
-        case (Button.events.BUTTON_CLICK):
-          store.lol = `${store.lol} lol`;
-          break;
-        default:
+    static showReducer(store, event) {
+      store.lol += ` ${event.lol.name}`;
+      if (event.lol.id === 1) {
+        store.show = true;
       }
+      return store;
+    }
+
+    static hideReducer(store, event) {
+      store.show = false;
       return store;
     }
 
     constructor(props) {
       super(props);
 
-      App.stream$
-        .scan(App.reducer, App.store)
+      const firstStream$ = App.stream$
+        .filter(({ type, from }) => ((type === Button.events.BUTTON_CLICK) && from.join(':') === 'first-button:my-app'))
+        .scan(App.showReducer, App.store);
+
+      const secondStream$ = App.stream$
+        .filter(({ type, from }) => ((type === Button.events.BUTTON_CLICK) && from.join(':') === 'second-button:my-app'))
+        .scan(App.hideReducer, App.store);
+
+      new Subject()
+        .merge(firstStream$)
+        .merge(secondStream$)
         .forEach(this.setState.bind(this));
     }
 
@@ -63,7 +76,7 @@ export default (id = Symbol()) => {
           </p>
           <FirstButton lol={{name: 'ohoh', id: 1}}/>
           <FirstButton lol={{name: 'ahah', id: 2}}/>
-          <SecondButton/>
+          {App.store.show ? <SecondButton/> : undefined}
         </div>
       );
     }

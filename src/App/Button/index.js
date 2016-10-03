@@ -56,7 +56,7 @@ const Button = (id = Symbol()) => {
     }
 
     handleButtonClick() {
-      clicks$.onNext({type: events.BUTTON_CLICK, id, data: this.props.data});
+      clicks$.onNext({type: events.BUTTON_CLICK, id, lol: this.props.lol});
     }
 
     render() {

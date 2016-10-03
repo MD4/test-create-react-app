@@ -7,7 +7,7 @@ import './index.css';
 const MyApp = App('my-app');
 
 ReactDOM.render(
-  <MyApp />,
+  <MyApp/>,
   document.getElementById('root')
 );
 
@@ -18,5 +18,3 @@ MyApp.stream$.filter(
 const store = {
   MyApp: MyApp.store
 };
-
-MyApp.stream$.forEach(() => console.log(store));
