@@ -15,11 +15,6 @@ const Button = (id = Symbol()) => {
     return event;
   };
 
-  const clicks$ = new Subject();
-  const stream$ = new Subject()
-    .merge(clicks$)
-    .map(populateEvent);
-
   const store = {
     clickCount: 0
   };
@@ -34,6 +29,10 @@ const Button = (id = Symbol()) => {
     return store;
   };
 
+  const clicks$ = new Subject();
+  const stream$ = new Subject()
+    .merge(clicks$)
+    .map(populateEvent);
   const updateStream$ = stream$
     .scan(reducer, store)
     .share();
