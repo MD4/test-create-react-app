@@ -6,8 +6,6 @@ const events = {
 };
 
 const Button = (id = Symbol()) => {
-  const clicks$ = new Subject();
-
   const populateEvent = event => {
     event = JSON.parse(JSON.stringify(event));
     if (!event.from) {
@@ -17,41 +15,54 @@ const Button = (id = Symbol()) => {
     return event;
   };
 
-  return class Button extends Component {
-    static stream$ = new Subject()
-      .merge(clicks$)
-      .map(populateEvent);
+  const clicks$ = new Subject();
+  const stream$ = new Subject()
+    .merge(clicks$)
+    .map(populateEvent);
 
-    static store = {
-      clickCount: 0
+  const store = {
+    clickCount: 0
+  };
+
+  const reducer = (store, event) => {
+    switch(event.type) {
+      case (events.BUTTON_CLICK):
+        store.clickCount++;
+        break;
+      default:
+    }
+    return store;
+  };
+
+  const updateStream$ = stream$
+    .scan(reducer, store)
+    .share();
+
+  return class Button extends Component {
+
+    static stream$ = stream$;
+
+    static propTypes = {
+      data: React.PropTypes.any.required
     };
 
-    static reducer(store, event) {
-      switch(event.type) {
-        case (events.BUTTON_CLICK):
-          store.clickCount++;
-          break;
-        default:
-      }
-      return store;
-    }
-
-    constructor(props) {
-      super(props);
-
-      Button.stream$
-        .scan(Button.reducer, Button.store)
+    componentDidMount() {
+      this.subscribtion = updateStream$
         .forEach(this.setState.bind(this));
     }
 
+    componentWillUnmount() {
+      this.subscribtion.dispose();
+    }
+
     handleButtonClick() {
-      clicks$.onNext({type: events.BUTTON_CLICK, id});
+      clicks$.onNext({type: events.BUTTON_CLICK, id, data: this.props.data});
     }
 
     render() {
       return (
         <button type="button" onClick={this.handleButtonClick.bind(this)}>
-          {`Click me! (${Button.store.clickCount})`}
+          {`Click me! (${store.clickCount})`}
         </button>
       );
     }
