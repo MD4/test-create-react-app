@@ -43,9 +43,9 @@ export default (id = Symbol()) => {
     constructor(props) {
       super(props);
 
-      /*App.stream$
+      App.stream$
         .scan(App.reducer, App.store)
-        .forEach(this.setState.bind(this));*/
+        .forEach(this.setState.bind(this));
     }
 
     render() {
@@ -61,8 +61,8 @@ export default (id = Symbol()) => {
           <p>
             {App.store.lol}
           </p>
-          <FirstButton data={{name: 'ohoh', id: 1}}/>
-          <FirstButton data={{name: 'ahah', id: 2}}/>
+          <FirstButton lol={{name: 'ohoh', id: 1}}/>
+          <FirstButton lol={{name: 'ahah', id: 2}}/>
           <SecondButton/>
         </div>
       );

@@ -40,9 +40,10 @@ const Button = (id = Symbol()) => {
   return class Button extends Component {
 
     static stream$ = stream$;
+    static store = store;
 
     static propTypes = {
-      data: React.PropTypes.any.required
+      lol: React.PropTypes.object
     };
 
     componentDidMount() {
