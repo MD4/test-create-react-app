@@ -1,20 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App/App';
-import Button from './App/Button';
-import './index.css';
+import Lol from './Lol/Lol';
 
-const MyApp = App('my-app');
+const MyLol = Lol('my-lol');
+
+console.log(213, MyLol.stream$);
 
 ReactDOM.render(
-  <MyApp/>,
+  <MyLol/>,
   document.getElementById('root')
 );
 
-MyApp.stream$.filter(
-  ({type}) => type === Button.events.BUTTON_CLICK
-).forEach(console.log.bind(console));
-
 const store = {
-  MyApp: MyApp.store
+  MyApp: MyLol.store
 };
+MyLol
+  .stream$
+  .forEach(event => console.log(event, store));

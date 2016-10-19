@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Subject } from 'rx';
+import _ from 'lodash';
 
-export default (store, childs, reducer) =>
+export default clazz =>
   (id = Symbol()) => {
-
     const populateEvent = event => {
       event = JSON.parse(JSON.stringify(event));
       if (!event.from) {
@@ -13,33 +13,47 @@ export default (store, childs, reducer) =>
       return event;
     };
 
-    const childsStreams$ = childs
-      .keys()
-      .map(key => childs[key].stream$);
+    const {
+      childs={},
+      reducer=_.noop,
+      store={}
+    } = clazz;
 
-    const stream$ = new Subject()
-      .merge(childsStreams$)
-      .map(populateEvent);
+    const childsStreams$ = _(childs)
+      .values()
+      .map('stream$')
+      .value();
+
+    let stream$ = new Subject();
+
+    if (childsStreams$.length) {
+      stream$ = stream$
+        .merge(...childsStreams$)
+    }
+
+    stream$ = stream$.map(populateEvent);
 
     const updateStream$ = stream$
       .scan(reducer, store)
       .share();
 
-    return class RxComponent extends Component {
+    const component = React.createClass(
+      _.extend({
 
-      static stream$ = stream$;
-      static store = store;
+        componentDidMount() {
+          this.subscribtion = updateStream$
+            .forEach(this.setState.bind(this));
+        },
 
-      componentDidMount() {
-        this.subscribtion = updateStream$
-          .forEach(this.setState.bind(this));
-      }
+        componentWillUnmount() {
+          this.subscribtion.dispose();
+        }
 
-      componentWillUnmount() {
-        this.subscribtion.dispose();
-      }
+      }, clazz)
+    );
 
-    };
+    component.stream$ = stream$;
 
+    return component;
   };
 
