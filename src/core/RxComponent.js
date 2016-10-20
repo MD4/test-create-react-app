@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
-import { Subject } from 'rx';
+import React, {Component} from 'react';
+import {Subject} from 'rx';
 
-export default (store, childs, reducer) =>
+import _ from 'lodash';
+
+export default clazz =>
   (id = Symbol()) => {
 
     const populateEvent = event => {
@@ -13,33 +15,64 @@ export default (store, childs, reducer) =>
       return event;
     };
 
-    const childsStreams$ = childs
-      .keys()
-      .map(key => childs[key].stream$);
+    const {
+      childs = [],
+      store = {},
+      reducer = (store, reducer) => store,
+      subStreams$ = []
+    } = clazz;
 
-    const stream$ = new Subject()
-      .merge(childsStreams$)
+    const childsStreams$ = _(childs)
+      .values()
+      .map('stream$')
+      .value();
+
+    let stream$ = new Subject();
+
+    if (childsStreams$.length) {
+      stream$ = stream$
+        .merge(...childsStreams$)
+    }
+
+    if (subStreams$.length) {
+      stream$ = stream$
+        .merge(...subStreams$)
+    }
+    stream$ = stream$
       .map(populateEvent);
+
 
     const updateStream$ = stream$
       .scan(reducer, store)
       .share();
 
-    return class RxComponent extends Component {
+    const RxComponent = React.createClass(_.extend({
+        stream$,
+        updateStream$,
+        store,
+        reducer,
+        childs,
 
-      static stream$ = stream$;
-      static store = store;
+        componentDidMount() {
+          this.subscribtion = updateStream$
+            .forEach(this.setState.bind(this));
+        },
 
-      componentDidMount() {
-        this.subscribtion = updateStream$
-          .forEach(this.setState.bind(this));
-      }
+        componentWillUnmount() {
+          this.subscribtion.dispose();
+        }
 
-      componentWillUnmount() {
-        this.subscribtion.dispose();
-      }
+      },
+      clazz
+    ));
 
-    };
+    RxComponent.store = store;
+    RxComponent.reducer = reducer;
+    RxComponent.childs = childs;
+    RxComponent.stream$ = stream$;
+    RxComponent.updateStream$ = updateStream$;
+
+    return RxComponent;
 
   };
 
