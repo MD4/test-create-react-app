@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App/App';
+import _ from 'lodash';
 import './index.css';
 
 const MyApp = App('my-app');
@@ -16,4 +17,5 @@ const store = {
 
 MyApp
   .stream$
-  .forEach(event => console.log(event, store));
+  .forEach(_.noop);
+  //.forEach(event => console.log(event, store));

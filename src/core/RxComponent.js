@@ -30,13 +30,11 @@ export default clazz =>
     let stream$ = new Subject();
 
     if (childsStreams$.length) {
-      stream$ = stream$
-        .merge(...childsStreams$)
+      childsStreams$.forEach(childsStream$ => (stream$ = stream$.merge(childsStream$)));
     }
 
     if (subStreams$.length) {
-      stream$ = stream$
-        .merge(...subStreams$)
+      subStreams$.forEach(subStream$ => (stream$ = stream$.merge(subStream$)));
     }
     stream$ = stream$
       .map(populateEvent);

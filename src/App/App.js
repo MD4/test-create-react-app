@@ -13,12 +13,15 @@ export default RxComponent({
     buttonText2: 'ho'
   },
 
-  reducer(store, event) {
-    console.log(event)
-    store.buttonText1 = 'ho';
-    store.buttonText2 = 'hey';
+  /*reducer(store, event) {
+    switch(event.type) {
+      case 'click':
+        store.buttonText1 = 'ho';
+        store.buttonText2 = 'hey';
+        break;
+    }
     return store;
-  },
+  },*/
 
   render() {
     return (

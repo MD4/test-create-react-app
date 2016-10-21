@@ -2,12 +2,14 @@ import React, {Component} from 'react';
 import {Subject} from 'rx';
 import RxComponent from '../core/RxComponent';
 
-const buttonStream$ = new Subject();
+const buttonClick$ = new Subject();
+const buttonMouseMove$ = new Subject();
 
 export default RxComponent({
 
   subStreams$: [
-    buttonStream$.debounce(250)
+    buttonClick$,
+    buttonMouseMove$.debounce(250)
   ],
 
   store: {
@@ -30,7 +32,20 @@ export default RxComponent({
   },
 
   handleOnButtonClick() {
-    buttonStream$.onNext({lol: 123});
+    buttonClick$.onNext({
+      type: 'click',
+      clicksCount: this.store.clicksCount
+    });
+  },
+
+  handleOnButtonMouseMove(e) {
+    buttonMouseMove$.onNext({
+      type: 'mouse-move',
+      position: {
+        x: e.x,
+        y: e.y
+      }
+    });
   },
 
   render() {
@@ -38,6 +53,7 @@ export default RxComponent({
       <button
         type="button"
         onClick={this.handleOnButtonClick}
+        onMouseMove={this.handleOnButtonMouseMove}
       >
         {this.props.text}
         ({this.store.clicksCount})
