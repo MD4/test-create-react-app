@@ -10,6 +10,10 @@ export default RxComponent({
     buttonStream$.debounce(250)
   ],
 
+  store: {
+    clicksCount: 0
+  },
+
   propTypes: {
     text: React.PropTypes.string
   },
@@ -18,6 +22,11 @@ export default RxComponent({
     return {
       text: 'A button !'
     };
+  },
+
+  reducer(store, event) {
+    store.clicksCount++;
+    return store;
   },
 
   handleOnButtonClick() {
@@ -31,6 +40,7 @@ export default RxComponent({
         onClick={this.handleOnButtonClick}
       >
         {this.props.text}
+        ({this.store.clicksCount})
       </button>
     );
   }
