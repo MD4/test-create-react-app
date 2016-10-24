@@ -7,6 +7,10 @@ const buttonMouseMove$ = new Subject();
 
 export default RxComponent({
 
+  events: {
+    click: 'click'
+  },
+
   subStreams$: [
     buttonClick$,
     buttonMouseMove$.debounce(250)
@@ -33,7 +37,7 @@ export default RxComponent({
 
   handleOnButtonClick() {
     buttonClick$.onNext({
-      type: 'click',
+      type: this.events.click,
       clicksCount: this.store.clicksCount
     });
   },

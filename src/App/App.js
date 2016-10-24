@@ -14,10 +14,9 @@ export default RxComponent({
   },
 
   reducer(store, event) {
-    console.log(this);
-    console.log(`${this.id}:my-button:click`, event.key);
-    switch(event.key) {
-      case `${this.id}:my-button:click`:
+    console.log(123, this.childs.myButton.events.click, event);
+    switch(event.type) {
+      case this.childs.myButton.events.click:
         store.buttonText1 = 'ho';
         store.buttonText2 = 'hey';
         break;

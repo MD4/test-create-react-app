@@ -20,11 +20,22 @@ export default clazz =>
     };
 
     const {
-      childs = [],
+      childs = {},
       store = {},
+      events: eventsSpec = {},
       reducer = (store, reducer) => store,
       subStreams$ = []
     } = clazz;
+
+    const events = Object
+      .keys(eventsSpec)
+      .reduce(
+        (memo, eventName) => {
+          memo[eventName] = `${id}:${eventsSpec[eventName]}`;
+          return memo;
+        },
+        {}
+      );
 
     const childsStreams$ = _(childs)
       .values()
@@ -40,22 +51,26 @@ export default clazz =>
     if (subStreams$.length) {
       subStreams$.forEach(subStream$ => (stream$ = stream$.merge(subStream$)));
     }
-    stream$ = stream$
+
+    const populatedStream$ = stream$
       .map(populateEvent);
 
 
     const updateStream$ = stream$
-      .scan(reducer, store)
+      .scan(reducer.bind({childs}), store)
       .filter(state => !_.isEmpty(state))
       .share();
 
-    const RxComponent = React.createClass(_.extend({
+    const definition = _.extend(
+      clazz,
+      {
         id,
         store,
-        reducer,
+        reducer: reducer.bind({childs}),
         childs,
+        events,
 
-        stream$,
+        stream$: populatedStream$,
         updateStream$,
 
         componentDidMount() {
@@ -67,16 +82,18 @@ export default clazz =>
           this.subscribtion.dispose();
         }
 
-      },
-      clazz
-    ));
+      }
+    );
+    const RxComponent = React.createClass(definition);
 
     RxComponent.id = id;
+    RxComponent.events = events;
     RxComponent.store = store;
-    RxComponent.reducer = reducer;
+    RxComponent.reducer = reducer.bind({childs});
     RxComponent.childs = childs;
+    RxComponent.events = events;
 
-    RxComponent.stream$ = stream$;
+    RxComponent.stream$ = populatedStream$;
     RxComponent.updateStream$ = updateStream$;
 
     return RxComponent;
