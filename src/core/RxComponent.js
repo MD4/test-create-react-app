@@ -12,6 +12,10 @@ export default clazz =>
         event.from = [];
       }
       event.from.push(id);
+      event.key = event.from
+        .reverse()
+        .concat(event.type)
+        .join(':');
       return event;
     };
 
@@ -42,14 +46,17 @@ export default clazz =>
 
     const updateStream$ = stream$
       .scan(reducer, store)
+      .filter(state => !_.isEmpty(state))
       .share();
 
     const RxComponent = React.createClass(_.extend({
-        stream$,
-        updateStream$,
+        id,
         store,
         reducer,
         childs,
+
+        stream$,
+        updateStream$,
 
         componentDidMount() {
           this.subscribtion = updateStream$
@@ -64,9 +71,11 @@ export default clazz =>
       clazz
     ));
 
+    RxComponent.id = id;
     RxComponent.store = store;
     RxComponent.reducer = reducer;
     RxComponent.childs = childs;
+
     RxComponent.stream$ = stream$;
     RxComponent.updateStream$ = updateStream$;
 
