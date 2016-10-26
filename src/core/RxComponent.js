@@ -59,7 +59,15 @@ export default clazz =>
     const updateStream$ = stream$
       .scan(reducer.bind({childs}), store)
       .filter(state => !_.isEmpty(state))
+      .distinctUntilChanged(
+        _.identity,
+        _.isEqual,
+      )
       .share();
+
+
+    updateStream$
+      .forEach(state => console.log(213, state));
 
     const definition = _.extend(
       clazz,
@@ -72,6 +80,10 @@ export default clazz =>
 
         stream$: populatedStream$,
         updateStream$,
+
+        getInitialState() {
+          return store;
+        },
 
         componentDidMount() {
           this.subscribtion = updateStream$

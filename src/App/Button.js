@@ -31,14 +31,17 @@ export default RxComponent({
   },
 
   reducer(store, event) {
-    store.clicksCount++;
-    return store;
+    const newStore = {...store};
+
+    newStore.clicksCount++;
+
+    return newStore;
   },
 
   handleOnButtonClick() {
     buttonClick$.onNext({
       type: this.events.click,
-      clicksCount: this.store.clicksCount
+      clicksCount: this.state.clicksCount
     });
   },
 
@@ -60,7 +63,7 @@ export default RxComponent({
         onMouseMove={this.handleOnButtonMouseMove}
       >
         {this.props.text}
-        ({this.store.clicksCount})
+        ({this.state.clicksCount})
       </button>
     );
   }
