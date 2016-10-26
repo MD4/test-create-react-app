@@ -8,7 +8,8 @@ const buttonMouseMove$ = new Subject();
 export default RxComponent({
 
   events: {
-    click: 'click'
+    click: 'click',
+    mouseMove: 'mouse-move'
   },
 
   subStreams$: [
@@ -17,7 +18,8 @@ export default RxComponent({
   ],
 
   store: {
-    clicksCount: 0
+    clicksCount: 0,
+    mousePosition: {x: 0, y: 0}
   },
 
   propTypes: {
@@ -33,7 +35,15 @@ export default RxComponent({
   reducer(store, event) {
     const newStore = {...store};
 
-    newStore.clicksCount++;
+    switch (event.type) {
+      case this.events.click:
+        newStore.clicksCount++;
+        break;
+      case this.events.mouseMove:
+        newStore.mousePosition = event.position;
+        console.log(event);
+        break;
+    }
 
     return newStore;
   },
@@ -46,11 +56,12 @@ export default RxComponent({
   },
 
   handleOnButtonMouseMove(e) {
+    console.log(e);
     buttonMouseMove$.onNext({
-      type: 'mouse-move',
+      type: this.events.mouseMove,
       position: {
-        x: e.x,
-        y: e.y
+        x: e.clientX,
+        y: e.clientY
       }
     });
   },
@@ -64,6 +75,7 @@ export default RxComponent({
       >
         {this.props.text}
         ({this.state.clicksCount})
+        [{this.state.mousePosition.x}:{this.state.mousePosition.y}]
       </button>
     );
   }

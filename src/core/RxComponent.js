@@ -55,9 +55,10 @@ export default clazz =>
     const populatedStream$ = stream$
       .map(populateEvent);
 
+    const bindedReducer = reducer.bind({id, childs, events});
 
     const updateStream$ = stream$
-      .scan(reducer.bind({childs}), store)
+      .scan(bindedReducer, store)
       .filter(state => !_.isEmpty(state))
       .distinctUntilChanged(
         _.identity,
@@ -74,7 +75,7 @@ export default clazz =>
       {
         id,
         store,
-        reducer: reducer.bind({childs}),
+        reducer: bindedReducer,
         childs,
         events,
 
@@ -101,7 +102,7 @@ export default clazz =>
     RxComponent.id = id;
     RxComponent.events = events;
     RxComponent.store = store;
-    RxComponent.reducer = reducer.bind({childs});
+    RxComponent.reducer = bindedReducer;
     RxComponent.childs = childs;
     RxComponent.events = events;
 
