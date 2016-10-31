@@ -17,5 +17,5 @@ const store = {
 
 MyApp
   .stream$
-  .forEach(_.noop);
-  //.forEach(event => console.log(event, store));
+  //.forEach(_.noop);
+  .forEach(event => console.log('index', event, store));

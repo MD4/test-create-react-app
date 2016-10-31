@@ -1,11 +1,12 @@
-import React, {Component} from 'react';
+import React from 'react';
 import RxComponent from '../core/RxComponent';
 import Button from './Button';
 
 export default RxComponent({
 
   childs: {
-    myButton: Button('my-button')
+    myButton: Button('my-button'),
+    myButton2: Button('my-button-2')
   },
 
   store: {
@@ -14,14 +15,17 @@ export default RxComponent({
   },
 
   reducer(store, event) {
-    const newStore = {...store};
     switch(event.type) {
       case this.childs.myButton.events.click:
-        newStore.buttonText1 = 'ho';
-        newStore.buttonText2 = 'hey';
+        store.buttonText1 = 'ho';
+        store.buttonText2 = 'hey';
         break;
+      case this.childs.myButton2.events.click:
+        alert('Old school shitty alert!');
+        break;
+      default:
     }
-    return newStore;
+    return store;
   },
 
   render() {
@@ -31,6 +35,7 @@ export default RxComponent({
         <p>lol</p>
         <this.childs.myButton text={this.state.buttonText1}></this.childs.myButton>
         <this.childs.myButton text={this.state.buttonText2}></this.childs.myButton>
+        <this.childs.myButton2 text={this.state.buttonText2}></this.childs.myButton2>
       </div>
     );
   }

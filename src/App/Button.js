@@ -1,9 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Subject} from 'rx';
 import RxComponent from '../core/RxComponent';
-
-const buttonClick$ = new Subject();
-const buttonMouseMove$ = new Subject();
 
 export default RxComponent({
 
@@ -12,10 +9,10 @@ export default RxComponent({
     mouseMove: 'mouse-move'
   },
 
-  subStreams$: [
-    buttonClick$,
-    buttonMouseMove$.debounce(250)
-  ],
+  subStreams$: {
+    buttonClick$: () => new Subject(),
+    buttonMouseMove$: () => new Subject().debounce(250)
+  },
 
   store: {
     clicksCount: 0,
@@ -33,31 +30,28 @@ export default RxComponent({
   },
 
   reducer(store, event) {
-    const newStore = {...store};
-
     switch (event.type) {
       case this.events.click:
-        newStore.clicksCount++;
+        store.clicksCount++;
         break;
       case this.events.mouseMove:
-        newStore.mousePosition = event.position;
-        console.log(event);
+        store.mousePosition = event.position;
         break;
+      default:
     }
 
-    return newStore;
+    return store;
   },
 
   handleOnButtonClick() {
-    buttonClick$.onNext({
+    this.subStreams$.buttonClick$.onNext({
       type: this.events.click,
       clicksCount: this.state.clicksCount
     });
   },
 
   handleOnButtonMouseMove(e) {
-    console.log(e);
-    buttonMouseMove$.onNext({
+    this.subStreams$.buttonMouseMove$.onNext({
       type: this.events.mouseMove,
       position: {
         x: e.clientX,

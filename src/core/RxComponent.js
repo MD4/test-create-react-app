@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Subject} from 'rx';
 
 import _ from 'lodash';
 
-export default clazz =>
-  (id = Symbol()) => {
+export default clazz => {
+  return (id = Symbol()) => {
 
     const populateEvent = event => {
       event = JSON.parse(JSON.stringify(event));
@@ -23,12 +23,12 @@ export default clazz =>
       childs = {},
       store = {},
       events: eventsSpec = {},
-      reducer = (store, reducer) => store,
-      subStreams$ = []
+      reducer:baseReducer = (store, event) => store,
+      subStreams$:baseSubStreams$ = {}
     } = clazz;
 
-    const events = Object
-      .keys(eventsSpec)
+    const events = _(eventsSpec)
+      .keys()
       .reduce(
         (memo, eventName) => {
           memo[eventName] = `${id}:${eventsSpec[eventName]}`;
@@ -42,23 +42,44 @@ export default clazz =>
       .map('stream$')
       .value();
 
+    const subStreams$ = _(baseSubStreams$)
+      .keys()
+      .reduce(
+        (memo, subStreamName) => {
+          memo[subStreamName] = baseSubStreams$[subStreamName]();
+          return memo;
+        },
+        {}
+      );
+
+    const subStreamsToMerge$ = _
+      .values(subStreams$);
+
     let stream$ = new Subject();
 
     if (childsStreams$.length) {
       childsStreams$.forEach(childsStream$ => (stream$ = stream$.merge(childsStream$)));
     }
 
-    if (subStreams$.length) {
-      subStreams$.forEach(subStream$ => (stream$ = stream$.merge(subStream$)));
+    if (subStreamsToMerge$.length) {
+      subStreamsToMerge$.forEach(subStream$ => (stream$ = stream$.merge(subStream$)));
     }
 
     const populatedStream$ = stream$
       .map(populateEvent);
 
-    const bindedReducer = reducer.bind({id, childs, events});
+    const reducer = (store, event) => baseReducer
+      .bind({
+        id,
+        childs,
+        events
+      })(
+        {...store},
+        event
+      );
 
     const updateStream$ = stream$
-      .scan(bindedReducer, store)
+      .scan(reducer, store)
       .filter(state => !_.isEmpty(state))
       .distinctUntilChanged(
         _.identity,
@@ -66,21 +87,18 @@ export default clazz =>
       )
       .share();
 
-
-    updateStream$
-      .forEach(state => console.log(213, state));
-
     const definition = _.extend(
-      clazz,
+      {...clazz},
       {
         id,
-        store,
-        reducer: bindedReducer,
-        childs,
         events,
+        store,
+        reducer,
+        childs,
 
         stream$: populatedStream$,
         updateStream$,
+        subStreams$,
 
         getInitialState() {
           return store;
@@ -97,19 +115,22 @@ export default clazz =>
 
       }
     );
+
     const RxComponent = React.createClass(definition);
 
     RxComponent.id = id;
     RxComponent.events = events;
     RxComponent.store = store;
-    RxComponent.reducer = bindedReducer;
+    RxComponent.reducer = reducer;
     RxComponent.childs = childs;
     RxComponent.events = events;
 
     RxComponent.stream$ = populatedStream$;
     RxComponent.updateStream$ = updateStream$;
+    RxComponent.subStreams$ = subStreams$;
 
     return RxComponent;
 
   };
 
+}
