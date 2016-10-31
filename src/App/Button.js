@@ -5,12 +5,17 @@ export default RxComponent({
 
   events: {
     click: 'click',
-    mouseMove: 'mouse-move'
+    mouseMove: 'mouse-move',
+    hasDoneSomething: 'hasDoneSomething'
   },
 
   subStreams$: {
     buttonClick$: $ => $,
-    buttonMouseMove$: $ => $.debounce(250)
+    buttonMouseMove$: $ => $.debounce(250),
+    buttonHasDoneSomething: ($, {buttonClick$, buttonMouseMove$}, {hasDoneSomething}) => $
+      .merge(buttonClick$)
+      .merge(buttonMouseMove$)
+      .map({type: hasDoneSomething})
   },
 
   store: {

@@ -55,7 +55,11 @@ export default clazz => {
     const subStreamsToMerge$ = _(subStreams$)
       .keys()
       .map(
-        subStreamName => baseSubStreams$[subStreamName](subStreams$[subStreamName])
+        subStreamName => baseSubStreams$[subStreamName](
+          subStreams$[subStreamName],
+          subStreams$,
+          events
+        )
       )
       .value();
 
