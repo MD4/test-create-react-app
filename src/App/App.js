@@ -15,10 +15,6 @@ export default RxComponent({
     color: '#000'
   },
 
-  componentWillMount() {
-
-  },
-
   reducer(store, event) {
     switch (event.type) {
       case this.childs.myButton.events.click:
