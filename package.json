@@ -12,6 +12,7 @@
     "lodash": "^4.16.4",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
+    "reactx": "github:md4/reactx",
     "rx": "^4.1.0"
   },
   "scripts": {

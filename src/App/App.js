@@ -1,5 +1,5 @@
 import React from 'react';
-import RxComponent from '../core/RxComponent';
+import {RxComponent} from 'reactx';
 import Button from './Button';
 
 export default RxComponent({
