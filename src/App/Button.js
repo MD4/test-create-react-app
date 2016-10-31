@@ -29,7 +29,8 @@ export default RxComponent({
 
   getDefaultProps() {
     return {
-      text: 'A button !'
+      text: 'A button !',
+      color: '#000'
     };
   },
 
@@ -67,6 +68,7 @@ export default RxComponent({
   render() {
     return (
       <button
+        style={{color: this.props.color}}
         type="button"
         onClick={this.handleOnButtonClick}
         onMouseMove={this.handleOnButtonMouseMove}
