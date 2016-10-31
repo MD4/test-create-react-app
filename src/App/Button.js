@@ -1,5 +1,4 @@
 import React from 'react';
-import {Subject} from 'rx';
 import RxComponent from '../core/RxComponent';
 
 export default RxComponent({
@@ -10,8 +9,8 @@ export default RxComponent({
   },
 
   subStreams$: {
-    buttonClick$: subStream$ => subStream$,
-    buttonMouseMove$: subStream$ => subStream$.debounce(250)
+    buttonClick$: $ => $,
+    buttonMouseMove$: $ => $.debounce(250)
   },
 
   store: {
