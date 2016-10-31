@@ -9,7 +9,3 @@ ReactDOM.render(
   <MyApp/>,
   document.getElementById('root')
 );
-
-MyApp
-  .stream$
-  .forEach(event => console.log('index', event, MyApp.store));

@@ -25,7 +25,7 @@ export default RxComponent({
         alert('Old school shitty alert!');
         break;
       case this.childs.myButton2.events.hasDoneSomething:
-        store.color = "#"+((1<<24)*Math.random()|0).toString(16);
+        store.color = "#" + ((1 << 24) * Math.random() | 0).toString(16);
         break;
       default:
     }
