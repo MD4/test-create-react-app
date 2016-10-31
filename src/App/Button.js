@@ -10,8 +10,8 @@ export default RxComponent({
   },
 
   subStreams$: {
-    buttonClick$: () => new Subject(),
-    buttonMouseMove$: () => new Subject().debounce(250)
+    buttonClick$: subStream$ => subStream$,
+    buttonMouseMove$: subStream$ => subStream$.debounce(250)
   },
 
   store: {

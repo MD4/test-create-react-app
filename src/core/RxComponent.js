@@ -46,14 +46,18 @@ export default clazz => {
       .keys()
       .reduce(
         (memo, subStreamName) => {
-          memo[subStreamName] = baseSubStreams$[subStreamName]();
+          memo[subStreamName] = new Subject();
           return memo;
         },
         {}
       );
 
-    const subStreamsToMerge$ = _
-      .values(subStreams$);
+    const subStreamsToMerge$ = _(subStreams$)
+      .keys()
+      .map(
+        subStreamName => baseSubStreams$[subStreamName](subStreams$[subStreamName])
+      )
+      .value();
 
     let stream$ = new Subject();
 
