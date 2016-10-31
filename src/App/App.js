@@ -15,6 +15,10 @@ export default RxComponent({
     color: '#000'
   },
 
+  componentWillMount() {
+
+  },
+
   reducer(store, event) {
     switch (event.type) {
       case this.childs.myButton.events.click:
@@ -25,7 +29,7 @@ export default RxComponent({
         alert('Old school shitty alert!');
         break;
       case this.childs.myButton2.events.hasDoneSomething:
-        store.color = "#" + ((1 << 24) * Math.random() | 0).toString(16);
+        store.color = '#' + ((1 << 24) * Math.random() | 0).toString(16);
         break;
       default:
     }

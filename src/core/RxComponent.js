@@ -117,11 +117,17 @@ export default clazz => {
         },
 
         componentDidMount() {
+          if (clazz.componentDidMount) {
+            clazz.componentDidMount.apply(this, arguments);
+          }
           this.subscribtion = updateStream$
             .forEach(this.setState.bind(this));
         },
 
         componentWillUnmount() {
+          if (clazz.componentWillUnmount) {
+            clazz.componentWillUnmount.apply(this, arguments);
+          }
           this.subscribtion.dispose();
         }
 
