@@ -52,16 +52,20 @@ export default clazz => {
         {}
       );
 
-    const subStreamsToMerge$ = _(subStreams$)
+    const subStreamsOutputs = {};
+
+    _(subStreams$)
       .keys()
-      .map(
-        subStreamName => baseSubStreams$[subStreamName](
-          subStreams$[subStreamName],
-          subStreams$,
-          events
-        )
-      )
-      .value();
+      .forEach(
+        subStreamName => subStreamsOutputs[subStreamName] =
+          baseSubStreams$[subStreamName](
+            subStreams$[subStreamName],
+            subStreamsOutputs,
+            events
+          )
+      );
+
+    const subStreamsToMerge$ = _.values(subStreamsOutputs);
 
     let stream$ = new Subject();
 
@@ -82,7 +86,7 @@ export default clazz => {
         childs,
         events
       })(
-        {...store},
+        _.cloneDeep(store),
         event
       );
 
@@ -96,7 +100,7 @@ export default clazz => {
       .share();
 
     const definition = _.extend(
-      {...clazz},
+      _.cloneDeep(clazz),
       {
         id,
         events,
