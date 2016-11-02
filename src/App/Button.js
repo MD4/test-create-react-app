@@ -1,13 +1,14 @@
 import React from 'react';
 import {RxComponent} from 'reactx';
 
-export default RxComponent({
+export default () => RxComponent({
 
   events: {
     click: 'click',
     mouseMove: 'mouse-move',
     hasDoneSomething: 'hasDoneSomething'
   },
+
 
   subStreams$: {
     buttonClick$: $ => $,

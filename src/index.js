@@ -1,11 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App/App';
 import './index.css';
 
-const MyApp = App('my-app');
+const App = require('./App/App').default;
+
+const MyApp = App()('my-app');
+const MyApp2 = App()('my-app-2');
 
 ReactDOM.render(
-  <MyApp/>,
+  <div>
+    <MyApp/>
+    <MyApp2/>
+  </div>,
   document.getElementById('root')
 );
