@@ -14,13 +14,23 @@ export default () => {
     },
 
     subStreams$: {
-      yoloService$: $ => YoloService.stream$
+      yoloService$: $ => YoloService.stream$,
+      fetchSwag$: $ => $
+        .debounce(500)
+        .map(YoloService.fetchSwag),
+      fetchYolo$: $ => $
+        .debounce(500)
+        .map(YoloService.fetchYolo)
     },
 
     store: {
       buttonText1: 'hey',
       buttonText2: 'ho',
-      color: '#000'
+      clickedSomething: false
+    },
+
+    yoloFetchingRule() {
+      return true;
     },
 
     reducer(store, event) {
@@ -29,11 +39,13 @@ export default () => {
           store.buttonText1 = 'ho';
           store.buttonText2 = 'hey';
 
-          if (store.clicksCount) {
-            YoloService.fetchSwag();
+          if (store.clickedSomething ) {
+            this.subStreams$.fetchYolo$.onNext();
           } else {
-            YoloService.fetchYolo();
+            this.subStreams$.fetchSwag$.onNext();
           }
+
+          store.clickedSomething = true;
           break;
         case this.childs.myButton2.events.click:
           alert('Old school shitty alert!');
@@ -42,10 +54,16 @@ export default () => {
           store.color = '#' + ((1 << 24) * Math.random() | 0).toString(16);
           break;
         case YoloService.events.swagFetched:
-          console.log('SWAG:%s', event.swag);
+          store.swag = event.swag;
           break;
         case YoloService.events.yoloFetched:
-          console.log('SWAG:%s', event.yolo);
+          store.yolo = event.yolo;
+          break;
+        case YoloService.events.swagFetching.type:
+          store.swag = '⌛';
+          break;
+        case YoloService.events.yoloFetching.type:
+          store.yolo = '⌛';
           break;
         default:
       }
@@ -60,6 +78,12 @@ export default () => {
           <this.childs.myButton color={this.state.color} text={this.state.buttonText1}></this.childs.myButton>
           <this.childs.myButton text={this.state.buttonText2}></this.childs.myButton>
           <this.childs.myButton2 text={this.state.buttonText2}></this.childs.myButton2>
+          <p>
+            SWAG:{this.state.swag}
+          </p>
+          <p>
+            YOLO:{this.state.yolo}
+          </p>
         </div>
       );
     }

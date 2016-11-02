@@ -14,3 +14,6 @@ ReactDOM.render(
   </div>,
   document.getElementById('root')
 );
+
+MyApp.stream$.forEach(event => console.log(event));
+MyApp2.stream$.forEach(event => console.log(event));

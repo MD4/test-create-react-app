@@ -2,15 +2,17 @@ import React from 'react';
 import {Observable, Subject} from 'rx';
 
 const fakeFetch = (data) => new Promise(
-  resolve => console.log('fetching stuff...') || setTimeout(resolve, 1000, data)
+  resolve => setTimeout(resolve, 1000, data)
 );
 
 const fetchYolo$ = new Subject();
 const fetchSwag$ = new Subject();
 
 const events = {
-  yoloFetched: 'yolo-fetched',
-  swagFetched: 'swag-fetched'
+  yoloFetching: {type: 'yolo-fetching'},
+  swagFetching: {type: 'swag-fetching'},
+  yoloFetched: {type: 'yolo-fetched'},
+  swagFetched: {type: 'swag-fetched'}
 };
 
 const subStreams = {
@@ -38,7 +40,15 @@ export default {
     .mergeAll()
     .share(),
 
-  fetchYolo: fetchYolo$.onNext.bind(fetchYolo$),
-  fetchSwag: fetchSwag$.onNext.bind(fetchSwag$)
+  fetchYolo: () => {
+    fetchYolo$.onNext();
+    return events.yoloFetching;
+  },
+
+  fetchSwag: () => {
+    console.log('lilolol')
+    fetchSwag$.onNext();
+    return events.swagFetching;
+  },
 
 };

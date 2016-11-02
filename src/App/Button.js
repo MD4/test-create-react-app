@@ -9,10 +9,9 @@ export default () => RxComponent({
     hasDoneSomething: 'hasDoneSomething'
   },
 
-
   subStreams$: {
     buttonClick$: $ => $,
-    buttonMouseMove$: $ => $.debounce(250),
+    buttonMouseMove$: $ => $.debounce(500),
     buttonHasDoneSomething: ($, {buttonClick$, buttonMouseMove$}, {hasDoneSomething}) => $
       .merge(buttonClick$)
       .merge(buttonMouseMove$)
@@ -57,6 +56,7 @@ export default () => RxComponent({
   },
 
   handleOnButtonMouseMove(e) {
+    return;
     this.subStreams$.buttonMouseMove$.onNext({
       type: this.events.mouseMove,
       position: {
