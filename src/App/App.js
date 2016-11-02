@@ -6,20 +6,26 @@ import YoloService from './YoloService';
 export default () => {
   const Button = require('./Button').default();
 
+  const MyButton = Button('my-button');
+  const MyButton2 = Button('my-button-2');
+
   return RxComponent({
 
     childs: {
-      myButton: Button('my-button'),
-      myButton2: Button('my-button-2')
+      MyButton,
+      MyButton2
     },
 
-    subStreams$: {
+    subStreams: {
       yoloService$: $ => YoloService.stream$,
-      fetchSwag$: $ => $
-        .debounce(500)
+      fetchSwag$: ($, _, rxComponent) => MyButton
+        .subStreams
+        .buttonClick$
+        .filter(() => !rxComponent.store.swag)
+        .debounce(200)
         .map(YoloService.fetchSwag),
       fetchYolo$: $ => $
-        .debounce(500)
+        .debounce(200)
         .map(YoloService.fetchYolo)
     },
 
@@ -33,24 +39,22 @@ export default () => {
       return true;
     },
 
-    reducer(store, event) {
+    reducer(store, event, {childs, subStreams}) {
       switch (event.type) {
-        case this.childs.myButton.events.click:
+        case MyButton.events.click:
           store.buttonText1 = 'ho';
           store.buttonText2 = 'hey';
 
           if (store.clickedSomething ) {
-            this.subStreams$.fetchYolo$.onNext();
-          } else {
-            this.subStreams$.fetchSwag$.onNext();
+            subStreams.fetchYolo$.onNext();
           }
 
           store.clickedSomething = true;
           break;
-        case this.childs.myButton2.events.click:
+        case MyButton2.events.click:
           alert('Old school shitty alert!');
           break;
-        case this.childs.myButton2.events.hasDoneSomething:
+        case MyButton2.events.hasDoneSomething:
           store.color = '#' + ((1 << 24) * Math.random() | 0).toString(16);
           break;
         case YoloService.events.swagFetched:
@@ -75,9 +79,9 @@ export default () => {
         <div className="App">
           <h1>App</h1>
           <p>lol</p>
-          <this.childs.myButton color={this.state.color} text={this.state.buttonText1}></this.childs.myButton>
-          <this.childs.myButton text={this.state.buttonText2}></this.childs.myButton>
-          <this.childs.myButton2 text={this.state.buttonText2}></this.childs.myButton2>
+          <MyButton color={this.state.color} text={this.state.buttonText1}/>
+          <MyButton text={this.state.buttonText2}/>
+          <MyButton2 text={this.state.buttonText2}/>
           <p>
             SWAG:{this.state.swag}
           </p>

@@ -9,10 +9,12 @@ export default () => RxComponent({
     hasDoneSomething: 'hasDoneSomething'
   },
 
-  subStreams$: {
+  subStreams: {
     buttonClick$: $ => $,
     buttonMouseMove$: $ => $.debounce(500),
-    buttonHasDoneSomething: ($, {buttonClick$, buttonMouseMove$}, {hasDoneSomething}) => $
+    buttonHasDoneSomething: ($,
+      {buttonClick$, buttonMouseMove$},
+      {events:{hasDoneSomething}}) => $
       .merge(buttonClick$)
       .merge(buttonMouseMove$)
       .map({type: hasDoneSomething})
@@ -34,12 +36,12 @@ export default () => RxComponent({
     };
   },
 
-  reducer(store, event) {
+  reducer(store, event, {events}) {
     switch (event.type) {
-      case this.events.click:
+      case events.click:
         store.clicksCount++;
         break;
-      case this.events.mouseMove:
+      case events.mouseMove:
         store.mousePosition = event.position;
         break;
       default:
@@ -49,15 +51,14 @@ export default () => RxComponent({
   },
 
   handleOnButtonClick() {
-    this.subStreams$.buttonClick$.onNext({
+    this.subStreams.buttonClick$.onNext({
       type: this.events.click,
       clicksCount: this.state.clicksCount
     });
   },
 
   handleOnButtonMouseMove(e) {
-    return;
-    this.subStreams$.buttonMouseMove$.onNext({
+    this.subStreams.buttonMouseMove$.onNext({
       type: this.events.mouseMove,
       position: {
         x: e.clientX,

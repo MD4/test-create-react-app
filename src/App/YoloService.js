@@ -27,7 +27,9 @@ const subStreams = {
       () => Observable
         .fromPromise(fakeFetch({swag: `${(Math.random() * 10000) << 0}$`}))
         .map(event => (event.type = events.swagFetched) && event)
-    )
+    ),
+  fetchYolo$,
+  fetchSwag$
 };
 
 export default {
@@ -41,13 +43,12 @@ export default {
     .share(),
 
   fetchYolo: () => {
-    fetchYolo$.onNext();
+    fetchYolo$.onNext(events.yoloFetching);
     return events.yoloFetching;
   },
 
   fetchSwag: () => {
-    console.log('lilolol')
-    fetchSwag$.onNext();
+    fetchSwag$.onNext(events.swagFetching);
     return events.swagFetching;
   },
 
