@@ -1,7 +1,9 @@
 import React from 'react';
 import {RxComponent} from 'reactx';
 
-import YoloService from './YoloService';
+const YoloService = require('./YoloService').default('my-yolo-service');
+console.log(YoloService)
+YoloService.stream$.subscribe(event => console.log(123, event))
 
 export default () => {
   const Button = require('./Button').default();
@@ -13,11 +15,11 @@ export default () => {
 
     childs: {
       MyButton,
-      MyButton2
+      MyButton2,
+      YoloService
     },
 
     subStreams: {
-      yoloService$: $ => YoloService.stream$,
       fetchSwag$: ($, _, rxComponent) => MyButton
         .subStreams
         .buttonClick$
@@ -35,18 +37,15 @@ export default () => {
       clickedSomething: false
     },
 
-    yoloFetchingRule() {
-      return true;
-    },
-
-    reducer(store, event, {childs, subStreams}) {
+    reducer(store, event, {subStreams}) {
+      console.log('event', event);
       switch (event.type) {
         case MyButton.events.click:
           store.buttonText1 = 'ho';
           store.buttonText2 = 'hey';
 
-          if (store.clickedSomething ) {
-            subStreams.fetchYolo$.onNext();
+          if (store.clickedSomething) {
+            subStreams.fetchYolo$.onNext(123);
           }
 
           store.clickedSomething = true;
@@ -63,10 +62,10 @@ export default () => {
         case YoloService.events.yoloFetched:
           store.yolo = event.yolo;
           break;
-        case YoloService.events.swagFetching.type:
+        case YoloService.events.swagFetching:
           store.swag = '⌛';
           break;
-        case YoloService.events.yoloFetching.type:
+        case YoloService.events.yoloFetching:
           store.yolo = '⌛';
           break;
         default:

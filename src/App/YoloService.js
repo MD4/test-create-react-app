@@ -1,55 +1,49 @@
 import React from 'react';
 import {Observable, Subject} from 'rx';
+import {RxService} from 'reactx';
 
 const fakeFetch = (data) => new Promise(
   resolve => setTimeout(resolve, 1000, data)
 );
 
-const fetchYolo$ = new Subject();
-const fetchSwag$ = new Subject();
+export default RxService({
 
-const events = {
-  yoloFetching: {type: 'yolo-fetching'},
-  swagFetching: {type: 'swag-fetching'},
-  yoloFetched: {type: 'yolo-fetched'},
-  swagFetched: {type: 'swag-fetched'}
-};
-
-const subStreams = {
-  fetchYoloProcess$: fetchYolo$
-    .flatMap(
-      () => Observable
-        .fromPromise(fakeFetch({yolo: `Y0L0-$W4G ${(Math.random() * 100) << 0}%`}))
-        .map(event => (event.type = events.yoloFetched) && event)
-    ),
-  fetchSwagProcess$: fetchSwag$
-    .flatMap(
-      () => Observable
-        .fromPromise(fakeFetch({swag: `${(Math.random() * 10000) << 0}$`}))
-        .map(event => (event.type = events.swagFetched) && event)
-    ),
-  fetchYolo$,
-  fetchSwag$
-};
-
-export default {
-
-  subStreams,
-  events,
-
-  stream$: Observable
-    .of(...Object.values(subStreams))
-    .mergeAll()
-    .share(),
-
-  fetchYolo: () => {
-    fetchYolo$.onNext(events.yoloFetching);
-    return events.yoloFetching;
+  subStreams: {
+    fetchYolo$: ($, _, {events}) => $
+      .flatMap(
+        () => Observable
+          .fromPromise(fakeFetch({yolo: `Y0L0-$W4G ${(Math.random() * 100) << 0}%`}))
+          .map(event => (event.type = events.yoloFetched) && event)
+      ),
+    fetchSwag$: ($, _, {events}) => $
+      .flatMap(
+        () => Observable
+          .fromPromise(fakeFetch({swag: `${(Math.random() * 10000) << 0}$`}))
+          .map(event => (event.type = events.swagFetched) && event)
+      )
   },
 
-  fetchSwag: () => {
-    fetchSwag$.onNext(events.swagFetching);
-    return events.swagFetching;
+  events: {
+    yoloFetching: 'yolo-fetching',
+    swagFetching: 'swag-fetching',
+    yoloFetched: 'yolo-fetched',
+    swagFetched: 'swag-fetched'
   },
 
-};
+  exposes: ({subStreams, events}) => ({
+
+    fetchYolo() {
+      console.log(123, subStreams)
+      subStreams.fetchYolo$.onNext({type: events.yoloFetching});
+      return {type: events.yoloFetching};
+    },
+
+    fetchSwag() {
+      console.log(123, subStreams)
+      subStreams.fetchSwag$.onNext({type: events.swagFetching});
+      return {type: events.swagFetching};
+    }
+
+  })
+
+});
