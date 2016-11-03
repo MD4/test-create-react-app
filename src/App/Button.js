@@ -12,12 +12,12 @@ export default () => RxComponent({
   subStreams: {
     buttonClick$: $ => $,
     buttonMouseMove$: $ => $.debounce(500),
-    /*buttonHasDoneSomething: ($,
+    buttonHasDoneSomething: ($,
       {buttonClick$, buttonMouseMove$},
       {events:{hasDoneSomething}}) => $
       .merge(buttonClick$)
       .merge(buttonMouseMove$)
-      .map({type: hasDoneSomething})*/
+      .map({type: hasDoneSomething})
   },
 
   store: {
@@ -58,7 +58,6 @@ export default () => RxComponent({
   },
 
   handleOnButtonMouseMove(e) {
-    return;
     this.subStreams.buttonMouseMove$.onNext({
       type: this.events.mouseMove,
       position: {
