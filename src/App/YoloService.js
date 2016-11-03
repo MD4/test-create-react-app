@@ -1,4 +1,3 @@
-import React from 'react';
 import {Observable} from 'rx';
 import {RxService} from 'reactx';
 
