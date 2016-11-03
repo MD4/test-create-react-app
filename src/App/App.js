@@ -2,8 +2,6 @@ import React from 'react';
 import {RxComponent} from 'reactx';
 
 const YoloService = require('./YoloService').default('my-yolo-service');
-console.log(YoloService)
-YoloService.stream$.subscribe(event => console.log(123, event))
 
 export default () => {
   const Button = require('./Button').default();
@@ -38,7 +36,6 @@ export default () => {
     },
 
     reducer(store, event, {subStreams}) {
-      console.log('event', event);
       switch (event.type) {
         case MyButton.events.click:
           store.buttonText1 = 'ho';
